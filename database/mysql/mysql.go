@@ -238,7 +238,7 @@ func (m *Mysql) Lock() error {
 	}
 
 	if success {
-		println("mysql:lock LOCKED", aid)
+		println("mysql:lock LOCKED", aid, time.Now().String())
 		m.isLocked = true
 		return nil
 	}
