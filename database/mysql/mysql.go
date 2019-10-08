@@ -13,15 +13,10 @@ import (
 	nurl "net/url"
 	"strconv"
 	"strings"
-)
 
-import (
+	"github.com/dunsal/migrate/v4/database"
 	"github.com/go-sql-driver/mysql"
 	"github.com/hashicorp/go-multierror"
-)
-
-import (
-	"github.com/dunsal/migrate/v4/database"
 )
 
 func init() {
@@ -225,6 +220,7 @@ func (m *Mysql) Close() error {
 func (m *Mysql) Lock() error {
 	if m.isLocked {
 		return database.ErrLocked
+		println("mysql:lock m.isLocked")
 	}
 
 	aid, err := database.GenerateAdvisoryLockId(
@@ -244,6 +240,7 @@ func (m *Mysql) Lock() error {
 		return nil
 	}
 
+	println("mysql:lock SELECT GET_LOCK failed")
 	return database.ErrLocked
 }
 
