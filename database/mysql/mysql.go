@@ -221,7 +221,7 @@ func (m *Mysql) Close() error {
 func (m *Mysql) Lock() error {
 	if m.isLocked {
 		return database.ErrLocked
-		println("mysql:lock m.isLocked", time.Now())
+		println("mysql:lock m.isLocked", time.Now().String())
 	}
 
 	aid, err := database.GenerateAdvisoryLockId(
@@ -233,7 +233,7 @@ func (m *Mysql) Lock() error {
 	query := "SELECT GET_LOCK(?, 10)"
 	var success bool
 	if err := m.conn.QueryRowContext(context.Background(), query, aid).Scan(&success); err != nil {
-		println("mysql:lock LOCKING ERR", aid, err, time.Now())
+		println("mysql:lock LOCKING ERR", aid, err, time.Now().String())
 		return &database.Error{OrigErr: err, Err: "try lock failed", Query: []byte(query)}
 	}
 
@@ -243,13 +243,13 @@ func (m *Mysql) Lock() error {
 		return nil
 	}
 
-	println("mysql:lock SELECT GET_LOCK failed", aid, time.Now())
+	println("mysql:lock SELECT GET_LOCK failed", aid, time.Now().String())
 	return database.ErrLocked
 }
 
 func (m *Mysql) Unlock() error {
 	if !m.isLocked {
-		println("mysql:unlock IS NOT LOCKED", time.Now())
+		println("mysql:unlock IS NOT LOCKED", time.Now().String())
 		return nil
 	}
 
@@ -261,7 +261,7 @@ func (m *Mysql) Unlock() error {
 
 	query := `SELECT RELEASE_LOCK(?)`
 	if _, err := m.conn.ExecContext(context.Background(), query, aid); err != nil {
-		println("mysql:unlock RELEASE_LOCK failed", aid, err, time.Now())
+		println("mysql:unlock RELEASE_LOCK failed", aid, err, time.Now().String())
 		return &database.Error{OrigErr: err, Query: []byte(query)}
 	}
 
@@ -269,7 +269,7 @@ func (m *Mysql) Unlock() error {
 	// in which case isLocked should be true until the timeout expires -- synchronizing
 	// these states is likely not worth trying to do; reconsider the necessity of isLocked.
 
-	println("mysql:unlock SUCCESS", aid, time.Now())
+	println("mysql:unlock SUCCESS", aid, time.Now().String())
 	m.isLocked = false
 	return nil
 }
